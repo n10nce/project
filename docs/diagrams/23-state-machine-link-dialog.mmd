@@ -1,0 +1,25 @@
+%%{init: {'theme':'neutral'}}%%
+stateDiagram-v2
+    [*] --> Closed
+
+    Closed --> Adding: OPEN_FORM (no link)
+    Closed --> Editing: OPEN_FORM (link)
+
+    Adding --> Saving: submit
+    Editing --> Saving: submit
+
+    Saving --> Closed: success (ADD/UPDATE_LINK)
+    Saving --> Adding: error (stay open)
+    Saving --> Editing: error (stay open)
+
+    Adding --> Closed: cancel
+    Editing --> Closed: cancel
+
+    note right of Adding
+        form is blank
+        button says "Add"
+    end note
+    note right of Editing
+        form pre-filled from editLink
+        button says "Save"
+    end note

@@ -1,0 +1,16 @@
+%%{init: {'theme':'neutral'}}%%
+flowchart TD
+    Start["attachUser(req, res, next)"] --> GA["getAuth(req)<br/>→ userId, isAuthenticated"]
+    GA --> Q1{"isAuthenticated?"}
+    Q1 -->|"no"| R401["return 401 JSON<br/>(stop here)"]
+    Q1 -->|"yes"| Find["prisma.user.findUnique<br/>where clerkId = userId"]
+    Find --> Q2{"row exists?"}
+    Q2 -->|"yes"| Set["req.user = existing"]
+    Q2 -->|"no (first ever request)"| Create["prisma.user.create<br/>{ clerkId }"]
+    Create --> Set
+    Set --> Next["next() → route handler runs"]
+
+    GA -.->|"any error"| Catch["next(err) → error handler"]
+
+    style R401 fill:#ffffff,stroke:#333333,color:#000
+    style Create fill:#ededed,stroke:#333333,color:#000

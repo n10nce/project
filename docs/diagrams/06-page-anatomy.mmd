@@ -1,0 +1,23 @@
+%%{init: {'theme':'neutral'}}%%
+flowchart TD
+    subgraph PageComp["A list page (e.g. Dashboard)"]
+        direction TB
+        Mount["Component mounts"] --> Effect["useEffect runs once"]
+        Effect --> FetchLinks["apiRequest('/api/links')"]
+        FetchLinks --> Dispatch["dispatch SET_DATA"]
+        Dispatch --> Store[("useReducer state:<br/>links, dialog open?, editLink")]
+        Store --> Render["render()"]
+
+        CtxIn["useCollections()"] --> Render
+
+        Render --> ShowCards["map links → &lt;LinkCard/&gt;"]
+        Render --> ShowForm["&lt;LinkForm/&gt; (hidden until opened)"]
+
+        ShowCards -->|"user clicks ❤ / 🗑 / ✏"| Callbacks["onUpdated / onDeleted / onEdit"]
+        Callbacks --> Dispatch2["dispatch UPDATE/DELETE/OPEN_FORM"]
+        Dispatch2 --> Store
+
+        ShowForm -->|"user submits"| FormSave["onCreated / onUpdated"]
+        FormSave --> Dispatch3["dispatch ADD_LINK / UPDATE_LINK"]
+        Dispatch3 --> Store
+    end

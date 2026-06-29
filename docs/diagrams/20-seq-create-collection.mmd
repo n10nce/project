@@ -1,0 +1,23 @@
+%%{init: {'theme':'neutral'}}%%
+sequenceDiagram
+    autonumber
+    actor U as User
+    participant SB as AppSidebar
+    participant CF as CollectionForm
+    participant Ctx as CollectionsProvider
+    participant API as apiRequest()
+    participant R as collections router
+    participant DB as MongoDB
+
+    U->>SB: click "+ New Collection"
+    SB->>CF: open dialog
+    U->>CF: type name, Create
+    CF->>API: POST /api/collections { name }
+    API->>R: (after attachUser)
+    R->>DB: collection.create
+    DB-->>R: new collection
+    R-->>CF: 201 + collection
+    CF->>Ctx: onCreated → addCollection(new)
+    Ctx->>Ctx: dispatch ADD_COLLECTION (one shared list)
+    Ctx-->>SB: sidebar re-renders WITH new item
+    Ctx-->>U: also appears in every Add Link dropdown instantly

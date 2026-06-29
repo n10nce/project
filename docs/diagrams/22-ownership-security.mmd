@@ -1,0 +1,16 @@
+%%{init: {'theme':'neutral'}}%%
+flowchart TD
+    A["Browser sends request<br/>+ Clerk JWT"] --> B["clerkMiddleware reads token"]
+    B --> C{"valid token?"}
+    C -->|"no"| D["401 — rejected"]
+    C -->|"yes"| E["attachUser:<br/>clerkId → our User row"]
+    E --> F["req.user.id is now trusted"]
+    F --> G["EVERY query includes<br/>where: { userId: req.user.id }"]
+    G --> H{"writing/deleting?"}
+    H -->|"yes"| I["findFirst by (id, userId)<br/>404 if not owned"]
+    H -->|"no (reading)"| J["findMany scoped to userId"]
+    I --> K["safe write"]
+    J --> L["only your rows returned"]
+
+    style D fill:#ffffff,stroke:#333333,color:#000
+    style G fill:#ffffff,stroke:#333333,color:#000

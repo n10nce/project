@@ -1,0 +1,33 @@
+%%{init: {'theme':'neutral'}}%%
+sequenceDiagram
+    autonumber
+    actor U as User
+    participant Page as Dashboard (React)
+    participant Clerk as Clerk (browser SDK)
+    participant Fetch as apiRequest() helper
+    participant EX as Express app
+    participant MW as attachUser middleware
+    participant RT as links router
+    participant PR as Prisma client
+    participant DB as MongoDB
+
+    U->>Page: opens the app
+    Page->>Clerk: getToken()
+    Clerk-->>Page: JWT (session token)
+    Page->>Fetch: apiRequest("/api/links", token)
+    Fetch->>EX: GET /api/links<br/>Authorization: Bearer JWT
+    EX->>MW: run middleware first
+    MW->>Clerk: is this JWT valid? (getAuth)
+    Clerk-->>MW: yes, clerkId = user_123
+    MW->>PR: find/create our User row
+    PR->>DB: query users
+    DB-->>PR: user
+    MW->>RT: next() (req.user is set)
+    RT->>PR: link.findMany({ where: userId })
+    PR->>DB: query links (+ tags)
+    DB-->>PR: rows
+    PR-->>RT: links array
+    RT-->>Fetch: 200 OK + JSON
+    Fetch-->>Page: parsed JSON
+    Page->>Page: dispatch SET_DATA → re-render
+    Page-->>U: list of links appears

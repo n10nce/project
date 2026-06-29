@@ -45,6 +45,7 @@ network. None of them lives inside another — they are independent and could ru
 different machines.
 
 ```mermaid
+%%{init: {'theme':'neutral'}}%%
 flowchart LR
     subgraph Browser["🌐 User's Browser"]
         SPA["React Single Page App<br/>(served by Vite, :5173)"]
@@ -92,6 +93,7 @@ Every box below is a real dependency from `package.json`. Knowing *which layer*
 a tool belongs to is half the battle when you're learning.
 
 ```mermaid
+%%{init: {'theme':'neutral'}}%%
 mindmap
   root((Link Vault))
     Frontend
@@ -126,6 +128,7 @@ Before zooming into each side, here is the **single most important flow** to
 understand. When the dashboard loads its links, this is what happens:
 
 ```mermaid
+%%{init: {'theme':'neutral'}}%%
 sequenceDiagram
     autonumber
     actor U as User
@@ -175,6 +178,7 @@ React apps are a **tree** of components. Some components near the top are
 everything nested inside them (this is React Context).
 
 ```mermaid
+%%{init: {'theme':'neutral'}}%%
 flowchart TD
     main["main.jsx<br/>(app entry point)"]
     main --> CP["&lt;ClerkProvider&gt;<br/>supplies auth everywhere"]
@@ -209,8 +213,8 @@ flowchart TD
     Children --> Card["LinkCard<br/>(one per link)"]
     Children --> LForm["LinkForm<br/>(add/edit dialog)"]
 
-    classDef provider fill:#e8f0fe,stroke:#4285f4,color:#000;
-    classDef page fill:#e6f4ea,stroke:#34a853,color:#000;
+    classDef provider fill:#ffffff,stroke:#333333,color:#000;
+    classDef page fill:#ededed,stroke:#333333,color:#000;
     class CP,BR,TP,Coll provider;
     class Dash,Links,Fav,ColPage,Tags,SignIn page;
 ```
@@ -226,6 +230,7 @@ React Router maps each **URL** to a **page component**. Some routes are public,
 the rest are locked behind `ProtectedRoute`.
 
 ```mermaid
+%%{init: {'theme':'neutral'}}%%
 flowchart TD
     URL["Browser URL"] --> R{"Which path?"}
     R -->|"/sign-in"| S["SignInPage<br/>✅ public"]
@@ -240,7 +245,7 @@ flowchart TD
     P -->|"/collections/:id"| C["Collection<br/>links in one collection"]
     P -->|"/tags"| T["Tags<br/>(student TODO)"]
 
-    classDef pub fill:#fef7e0,stroke:#f9ab00,color:#000;
+    classDef pub fill:#ededed,stroke:#333333,color:#000;
     class S pub;
 ```
 
@@ -254,6 +259,7 @@ Every list page (`Dashboard`, `Links`, `Favorites`, `Collection`) follows the
 **same recipe**. Learn it once, and you understand all of them.
 
 ```mermaid
+%%{init: {'theme':'neutral'}}%%
 flowchart TD
     subgraph PageComp["A list page (e.g. Dashboard)"]
         direction TB
@@ -288,6 +294,7 @@ Instead of many `useState` calls, each page keeps related state in **one object*
 managed by a `reducer`. A reducer is a pure function: `(state, action) → newState`.
 
 ```mermaid
+%%{init: {'theme':'neutral'}}%%
 flowchart LR
     subgraph Actions["Actions (things that happen)"]
         A1["SET_DATA"]
@@ -323,6 +330,7 @@ needed in **two far‑apart places**: the **sidebar** (to list collections) and 
 #### ❌ The old (buggy) design — two independent copies
 
 ```mermaid
+%%{init: {'theme':'neutral'}}%%
 flowchart TD
     subgraph Layout["Layout"]
         LFetch["fetch /api/collections"] --> LState[("copy A<br/>(sidebar)")]
@@ -339,8 +347,8 @@ flowchart TD
 
     AddA -.->|"copy B never hears about it!"| PState
 
-    style AddA fill:#fce8e6,stroke:#ea4335,color:#000
-    style PState fill:#fce8e6,stroke:#ea4335,color:#000
+    style AddA fill:#ffffff,stroke:#333333,color:#000
+    style PState fill:#ffffff,stroke:#333333,color:#000
 ```
 
 The bug: creating a collection updated **copy A** (so the sidebar refreshed) but
@@ -350,6 +358,7 @@ dropdown until a full page reload.
 #### ✅ The fixed design — one shared source of truth
 
 ```mermaid
+%%{init: {'theme':'neutral'}}%%
 flowchart TD
     Prov["CollectionsProvider<br/>(in ProtectedRoute)"] --> One[("the ONE collections list<br/>+ addCollection()")]
 
@@ -364,8 +373,8 @@ flowchart TD
     Add -.->|"everyone re-renders together"| SB
     Add -.->|" "| LF
 
-    style One fill:#e6f4ea,stroke:#34a853,color:#000
-    style Add fill:#e6f4ea,stroke:#34a853,color:#000
+    style One fill:#ededed,stroke:#333333,color:#000
+    style Add fill:#ededed,stroke:#333333,color:#000
 ```
 
 Now there is exactly **one** list. Updating it updates *every* consumer at once —
@@ -382,6 +391,7 @@ The backend is small and organized by responsibility. `index.js` wires everythin
 together; each file has one job.
 
 ```mermaid
+%%{init: {'theme':'neutral'}}%%
 flowchart TD
     Index["index.js<br/>(creates the Express app)"]
     Index --> Cors["cors()"]
@@ -414,6 +424,7 @@ A request in Express flows through a **pipeline** of functions, in order. Each o
 can handle the request, modify it, or pass it along with `next()`.
 
 ```mermaid
+%%{init: {'theme':'neutral'}}%%
 flowchart TD
     Req["📨 Incoming request"] --> C["cors()<br/>allow the browser origin"]
     C --> J["express.json()<br/>parse JSON body → req.body"]
@@ -430,8 +441,8 @@ flowchart TD
     Handler --> Resp["📤 res.json(...)"]
     Handler -->|"throws / next(err)"| ErrMW["error handler<br/>→ 500 JSON"]
 
-    style E401 fill:#fce8e6,stroke:#ea4335,color:#000
-    style ErrMW fill:#fef7e0,stroke:#f9ab00,color:#000
+    style E401 fill:#ffffff,stroke:#333333,color:#000
+    style ErrMW fill:#ededed,stroke:#333333,color:#000
 ```
 
 **Order is everything.** `express.json()` must run before handlers, or `req.body`
@@ -445,6 +456,7 @@ This middleware runs before every `/api/...` route. It does two jobs: **reject**
 anonymous users, and **translate** the Clerk identity into *our* database user.
 
 ```mermaid
+%%{init: {'theme':'neutral'}}%%
 flowchart TD
     Start["attachUser(req, res, next)"] --> GA["getAuth(req)<br/>→ userId, isAuthenticated"]
     GA --> Q1{"isAuthenticated?"}
@@ -458,8 +470,8 @@ flowchart TD
 
     GA -.->|"any error"| Catch["next(err) → error handler"]
 
-    style R401 fill:#fce8e6,stroke:#ea4335,color:#000
-    style Create fill:#e6f4ea,stroke:#34a853,color:#000
+    style R401 fill:#ffffff,stroke:#333333,color:#000
+    style Create fill:#ededed,stroke:#333333,color:#000
 ```
 
 **Lazy user creation:** notice there's no "sign up" endpoint. The very first time
@@ -487,6 +499,7 @@ Every route below is automatically scoped to the current user (via `req.user.id`
 One endpoint serves three different screens just by reading query parameters:
 
 ```mermaid
+%%{init: {'theme':'neutral'}}%%
 flowchart LR
     In["GET /api/links?favorite&collectionId"] --> Base["where = { userId }"]
     Base --> F{"favorite === 'true'?"}
@@ -510,6 +523,7 @@ When you type tags as text (e.g. `react, docs`), the backend turns each **name**
 into a tag **row**, creating any that don't exist yet:
 
 ```mermaid
+%%{init: {'theme':'neutral'}}%%
 flowchart TD
     Start["resolveTagIds(userId, names)"] --> Loop{"more names?"}
     Loop -->|"yes"| Find["findFirst tag<br/>where userId + name"]
@@ -532,6 +546,7 @@ This is the **shape of the data** in MongoDB, expressed as Prisma models. The
 relationships here drive almost everything else in the app.
 
 ```mermaid
+%%{init: {'theme':'neutral'}}%%
 erDiagram
     USER ||--o{ LINK : "owns"
     USER ||--o{ COLLECTION : "owns"
@@ -592,6 +607,7 @@ square = an outside actor.
 ### Level 0 — context diagram (the whole system as one process)
 
 ```mermaid
+%%{init: {'theme':'neutral'}}%%
 flowchart LR
     User(["👤 User"])
     System(("Link Vault<br/>System"))
@@ -606,6 +622,7 @@ flowchart LR
 ### Level 1 — inside the system
 
 ```mermaid
+%%{init: {'theme':'neutral'}}%%
 flowchart TD
     User(["👤 User"])
 
@@ -656,6 +673,7 @@ participant. They're the best way to see *who calls whom, in what order*.
 ### 8.1 Add a new link (the most detailed flow)
 
 ```mermaid
+%%{init: {'theme':'neutral'}}%%
 sequenceDiagram
     autonumber
     actor U as User
@@ -697,6 +715,7 @@ sequenceDiagram
 ### 8.2 Toggle favorite (a partial update)
 
 ```mermaid
+%%{init: {'theme':'neutral'}}%%
 sequenceDiagram
     autonumber
     actor U as User
@@ -727,6 +746,7 @@ sequenceDiagram
 ### 8.3 Create a collection (shared-state update)
 
 ```mermaid
+%%{init: {'theme':'neutral'}}%%
 sequenceDiagram
     autonumber
     actor U as User
@@ -757,6 +777,7 @@ update, every consumer refreshes.
 ### 8.4 Delete a collection (cascade-by-detach)
 
 ```mermaid
+%%{init: {'theme':'neutral'}}%%
 sequenceDiagram
     autonumber
     actor U as User
@@ -793,6 +814,7 @@ The single most important security rule in this app: **a user can only ever touc
 their own data.** Here's how that's enforced at every layer.
 
 ```mermaid
+%%{init: {'theme':'neutral'}}%%
 flowchart TD
     A["Browser sends request<br/>+ Clerk JWT"] --> B["clerkMiddleware reads token"]
     B --> C{"valid token?"}
@@ -806,8 +828,8 @@ flowchart TD
     I --> K["safe write"]
     J --> L["only your rows returned"]
 
-    style D fill:#fce8e6,stroke:#ea4335,color:#000
-    style G fill:#e8f0fe,stroke:#4285f4,color:#000
+    style D fill:#ffffff,stroke:#333333,color:#000
+    style G fill:#ffffff,stroke:#333333,color:#000
 ```
 
 **Two defenses working together:**
@@ -829,6 +851,7 @@ The add/edit dialog is the same component in two modes. Modeling it as a state
 machine makes its behavior crystal clear.
 
 ```mermaid
+%%{init: {'theme':'neutral'}}%%
 stateDiagram-v2
     [*] --> Closed
 

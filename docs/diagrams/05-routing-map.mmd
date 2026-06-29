@@ -1,0 +1,17 @@
+%%{init: {'theme':'neutral'}}%%
+flowchart TD
+    URL["Browser URL"] --> R{"Which path?"}
+    R -->|"/sign-in"| S["SignInPage<br/>✅ public"]
+    R -->|"everything else"| G{"Signed in?<br/>(ProtectedRoute)"}
+
+    G -->|"No"| Redirect["Redirect to /sign-in"]
+    G -->|"Yes"| P{"Which page?"}
+
+    P -->|"/"| D["Dashboard<br/>recent links + stats"]
+    P -->|"/links"| L["Links<br/>all links + search"]
+    P -->|"/favorites"| F["Favorites<br/>favorite links only"]
+    P -->|"/collections/:id"| C["Collection<br/>links in one collection"]
+    P -->|"/tags"| T["Tags<br/>(student TODO)"]
+
+    classDef pub fill:#ededed,stroke:#333333,color:#000;
+    class S pub;

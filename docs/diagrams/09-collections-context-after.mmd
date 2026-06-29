@@ -1,0 +1,17 @@
+%%{init: {'theme':'neutral'}}%%
+flowchart TD
+    Prov["CollectionsProvider<br/>(in ProtectedRoute)"] --> One[("the ONE collections list<br/>+ addCollection()")]
+
+    One --> SB["AppSidebar (via Layout)"]
+    One --> LF["LinkForm dropdown (every page)"]
+    One --> Stats["Dashboard stats / Collection title"]
+
+    NewBtn["+ New Collection"] --> Create["POST /api/collections"]
+    Create --> Add["addCollection(new)"]
+    Add --> One
+
+    Add -.->|"everyone re-renders together"| SB
+    Add -.->|" "| LF
+
+    style One fill:#ededed,stroke:#333333,color:#000
+    style Add fill:#ededed,stroke:#333333,color:#000

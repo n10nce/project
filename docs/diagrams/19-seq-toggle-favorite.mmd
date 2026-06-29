@@ -1,0 +1,26 @@
+%%{init: {'theme':'neutral'}}%%
+sequenceDiagram
+    autonumber
+    actor U as User
+    participant C as LinkCard
+    participant API as apiRequest()
+    participant R as links router
+    participant P as Prisma
+    participant DB as MongoDB
+
+    U->>C: click ❤ on a link
+    C->>API: PATCH /api/links/:id { favorite: true }
+    API->>R: (after attachUser)
+    R->>P: findFirst link by id + userId (ownership check)
+    P->>DB: links
+    DB-->>P: existing?
+    alt not found / not yours
+        R-->>C: 404 Not found
+    else found
+        R->>P: link.update({ favorite: true })
+        P->>DB: update
+        DB-->>P: updated link
+        R-->>C: 200 + updated link
+        C->>C: onUpdated → dispatch UPDATE_LINK
+        C-->>U: heart fills in
+    end

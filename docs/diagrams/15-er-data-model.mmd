@@ -1,0 +1,36 @@
+%%{init: {'theme':'neutral'}}%%
+erDiagram
+    USER ||--o{ LINK : "owns"
+    USER ||--o{ COLLECTION : "owns"
+    USER ||--o{ TAG : "owns"
+    COLLECTION ||--o{ LINK : "groups (optional)"
+    LINK }o--o{ TAG : "labeled with"
+
+    USER {
+        string id PK "Mongo _id"
+        string clerkId UK "from Clerk, unique"
+    }
+    COLLECTION {
+        string id PK
+        string name
+        string userId FK
+        datetime createdAt
+    }
+    TAG {
+        string id PK
+        string name
+        string userId FK
+        array linkIds FK "ids of linked links"
+    }
+    LINK {
+        string id PK
+        string url
+        string title "optional"
+        string favicon "optional"
+        string notes "optional"
+        boolean favorite "default false"
+        string userId FK
+        string collectionId FK "optional"
+        array tagIds FK "ids of tags"
+        datetime createdAt
+    }

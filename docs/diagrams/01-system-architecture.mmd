@@ -1,0 +1,26 @@
+%%{init: {'theme':'neutral'}}%%
+flowchart LR
+    subgraph Browser["🌐 User's Browser"]
+        SPA["React Single Page App<br/>(served by Vite, :5173)"]
+    end
+
+    subgraph ClerkCloud["☁️ Clerk (Authentication service)"]
+        ClerkUI["Hosted Sign-in / Sign-up UI"]
+        ClerkVerify["Issues & verifies<br/>session tokens (JWT)"]
+    end
+
+    subgraph Backend["🖥️ Backend (Node.js + Express, :3000)"]
+        API["REST API<br/>/api/links, /api/collections, /api/tags"]
+    end
+
+    subgraph Database["🗄️ MongoDB (cloud database)"]
+        Mongo[("Collections:<br/>users, links,<br/>collections, tags")]
+    end
+
+    SPA -->|"1 . not signed in → redirect"| ClerkUI
+    ClerkUI -->|"2 . session token (JWT)"| SPA
+    SPA -->|"3 . fetch with<br/>Authorization: Bearer JWT"| API
+    API -->|"4 . is this token valid?"| ClerkVerify
+    API -->|"5 . read/write via Prisma"| Mongo
+    Mongo -->|"6 . matching rows"| API
+    API -->|"7 . JSON response"| SPA

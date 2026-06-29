@@ -1,0 +1,13 @@
+%%{init: {'theme':'neutral'}}%%
+flowchart LR
+    In["GET /api/links?favorite&collectionId"] --> Base["where = { userId }"]
+    Base --> F{"favorite === 'true'?"}
+    F -->|"yes"| AddF["where.favorite = true"]
+    F -->|"no"| Skip1[" "]
+    AddF --> Cq{"collectionId given?"}
+    Skip1 --> Cq
+    Cq -->|"yes"| AddC["where.collectionId = id"]
+    Cq -->|"no"| Skip2[" "]
+    AddC --> Run["prisma.link.findMany<br/>include tags, newest first"]
+    Skip2 --> Run
+    Run --> Out["JSON array of links"]

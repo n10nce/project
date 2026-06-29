@@ -1,0 +1,19 @@
+%%{init: {'theme':'neutral'}}%%
+flowchart TD
+    subgraph Layout["Layout"]
+        LFetch["fetch /api/collections"] --> LState[("copy A<br/>(sidebar)")]
+        LState --> SB["AppSidebar shows it"]
+        NewBtn["+ New Collection"] --> Create["POST /api/collections"]
+        Create --> AddA["update copy A only"]
+        AddA --> LState
+    end
+
+    subgraph Pg["Each page (Dashboard, Links...)"]
+        PFetch["fetch /api/collections again"] --> PState[("copy B<br/>(Add Link picker)")]
+        PState --> LF["LinkForm dropdown"]
+    end
+
+    AddA -.->|"copy B never hears about it!"| PState
+
+    style AddA fill:#ffffff,stroke:#333333,color:#000
+    style PState fill:#ffffff,stroke:#333333,color:#000

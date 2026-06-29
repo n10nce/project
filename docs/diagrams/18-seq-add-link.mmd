@@ -1,0 +1,37 @@
+%%{init: {'theme':'neutral'}}%%
+sequenceDiagram
+    autonumber
+    actor U as User
+    participant LF as LinkForm
+    participant API as apiRequest()
+    participant MW as attachUser
+    participant R as links router
+    participant P as Prisma
+    participant DB as MongoDB
+
+    U->>LF: type URL + tags "react, docs", click Add
+    LF->>LF: getToken()
+    LF->>API: POST /api/links { url, notes, collectionId, tags }
+    API->>MW: with Bearer token
+    MW->>P: find/create User
+    P->>DB: users
+    DB-->>P: user
+    MW->>R: next() (req.user set)
+
+    R->>R: resolveTagIds(userId, ["react","docs"])
+    loop for each tag name
+        R->>P: findFirst tag (userId, name)
+        P->>DB: tags
+        alt tag missing
+            R->>P: create tag
+            P->>DB: insert tag
+        end
+    end
+    R->>P: link.create({ ...data, tags: connect ids })
+    P->>DB: insert link + link/tag relations
+    DB-->>P: new link (include tags)
+    P-->>R: link
+    R-->>API: 201 Created + JSON
+    API-->>LF: link object
+    LF->>LF: onCreated(link) → dispatch ADD_LINK
+    LF-->>U: new card shows at top of list

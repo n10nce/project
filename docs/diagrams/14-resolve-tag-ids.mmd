@@ -1,0 +1,10 @@
+%%{init: {'theme':'neutral'}}%%
+flowchart TD
+    Start["resolveTagIds(userId, names)"] --> Loop{"more names?"}
+    Loop -->|"yes"| Find["findFirst tag<br/>where userId + name"]
+    Find --> Has{"found?"}
+    Has -->|"yes"| Push["push existing id"]
+    Has -->|"no"| New["create tag"]
+    New --> Push
+    Push --> Loop
+    Loop -->|"no"| Done["return list of tag ids"]

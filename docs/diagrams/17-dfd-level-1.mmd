@@ -1,0 +1,34 @@
+%%{init: {'theme':'neutral'}}%%
+flowchart TD
+    User(["👤 User"])
+
+    subgraph LinkVault["Link Vault"]
+        P1(("1.0<br/>Authenticate<br/>request"))
+        P2(("2.0<br/>Manage links"))
+        P3(("3.0<br/>Manage<br/>collections"))
+        P4(("4.0<br/>Resolve tags"))
+
+        DS1[("D1: users")]
+        DS2[("D2: links")]
+        DS3[("D3: collections")]
+        DS4[("D4: tags")]
+    end
+
+    Clerk(["☁️ Clerk"])
+
+    User -->|"request + token"| P1
+    P1 -->|"verify"| Clerk
+    P1 -->|"find/create"| DS1
+    P1 -->|"req.user"| P2
+    P1 -->|"req.user"| P3
+
+    User -->|"link data"| P2
+    P2 <-->|"CRUD"| DS2
+    P2 -->|"tag names"| P4
+    P4 <-->|"find/create"| DS4
+    P2 -->|"link + tags"| User
+
+    User -->|"collection data"| P3
+    P3 <-->|"CRUD"| DS3
+    P3 -->|"detach links"| DS2
+    P3 -->|"collections"| User

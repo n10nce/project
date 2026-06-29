@@ -1,0 +1,19 @@
+%%{init: {'theme':'neutral'}}%%
+flowchart TD
+    Req["📨 Incoming request"] --> C["cors()<br/>allow the browser origin"]
+    C --> J["express.json()<br/>parse JSON body → req.body"]
+    J --> CM["clerkMiddleware()<br/>read auth info onto request"]
+    CM --> Match{"path starts with<br/>/api/links|collections|tags ?"}
+
+    Match -->|"yes"| AU["attachUser<br/>(auth gate)"]
+    Match -->|"no match"| NF["no route → falls through"]
+
+    AU --> OK{"authenticated?"}
+    OK -->|"no"| E401["⛔ 401 Unauthenticated"]
+    OK -->|"yes"| Handler["route handler<br/>(GET/POST/PATCH/DELETE)"]
+
+    Handler --> Resp["📤 res.json(...)"]
+    Handler -->|"throws / next(err)"| ErrMW["error handler<br/>→ 500 JSON"]
+
+    style E401 fill:#ffffff,stroke:#333333,color:#000
+    style ErrMW fill:#ededed,stroke:#333333,color:#000

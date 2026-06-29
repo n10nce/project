@@ -1,0 +1,23 @@
+%%{init: {'theme':'neutral'}}%%
+sequenceDiagram
+    autonumber
+    actor U as User
+    participant API as apiRequest()
+    participant R as collections router
+    participant P as Prisma
+    participant DB as MongoDB
+
+    U->>API: DELETE /api/collections/:id
+    API->>R: (after attachUser)
+    R->>P: findFirst collection (id, userId)
+    P->>DB: collections
+    DB-->>P: existing?
+    alt not yours
+        R-->>U: 404
+    else found
+        R->>P: link.updateMany<br/>where collectionId=id → set null
+        P->>DB: detach links
+        R->>P: collection.delete(id)
+        P->>DB: delete
+        R-->>U: 200 { id }
+    end

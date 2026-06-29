@@ -1,0 +1,10 @@
+%%{init: {'theme':'neutral'}}%%
+flowchart LR
+    User(["👤 User"])
+    System(("Link Vault<br/>System"))
+    ClerkExt(["☁️ Clerk"])
+
+    User -->|"links, collections, tags,<br/>sign-in"| System
+    System -->|"saved data,<br/>lists, pages"| User
+    System -->|"verify token"| ClerkExt
+    ClerkExt -->|"identity (clerkId)"| System

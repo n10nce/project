@@ -1,0 +1,20 @@
+%%{init: {'theme':'neutral'}}%%
+flowchart LR
+    subgraph Actions["Actions (things that happen)"]
+        A1["SET_DATA"]
+        A2["ADD_LINK"]
+        A3["UPDATE_LINK"]
+        A4["DELETE_LINK"]
+        A5["OPEN_FORM"]
+        A6["CLOSE_FORM"]
+    end
+
+    A1 --> RED["reducer(state, action)"]
+    A2 --> RED
+    A3 --> RED
+    A4 --> RED
+    A5 --> RED
+    A6 --> RED
+
+    RED --> NEW["returns a NEW state object<br/>(never mutates the old one)"]
+    NEW --> RR["React detects change → re-render"]

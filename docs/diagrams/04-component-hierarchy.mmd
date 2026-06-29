@@ -1,0 +1,39 @@
+%%{init: {'theme':'neutral'}}%%
+flowchart TD
+    main["main.jsx<br/>(app entry point)"]
+    main --> CP["&lt;ClerkProvider&gt;<br/>supplies auth everywhere"]
+    CP --> BR["&lt;BrowserRouter&gt;<br/>enables URL routing"]
+    BR --> TP["&lt;TooltipProvider&gt;<br/>needed by shadcn tooltips"]
+    TP --> App["&lt;App/&gt;<br/>the route table"]
+
+    App --> Pub["Public route"]
+    App --> Prot["&lt;ProtectedRoute&gt;<br/>auth gate"]
+
+    Pub --> SignIn["SignInPage<br/>(Clerk widget)"]
+
+    Prot --> Coll["&lt;CollectionsProvider&gt;<br/>shared collections list"]
+    Coll --> Outlet["&lt;Outlet/&gt;<br/>renders the matched page"]
+
+    Outlet --> Dash["Dashboard"]
+    Outlet --> Links["Links"]
+    Outlet --> Fav["Favorites"]
+    Outlet --> ColPage["Collection /:id"]
+    Outlet --> Tags["Tags"]
+
+    Dash --> Layout1["&lt;Layout&gt;"]
+    Links --> Layout1
+    Fav --> Layout1
+    ColPage --> Layout1
+    Tags --> Layout1
+
+    Layout1 --> Sidebar["AppSidebar<br/>(nav + collections)"]
+    Layout1 --> CForm["CollectionForm<br/>(new collection dialog)"]
+    Layout1 --> Children["page content<br/>(children)"]
+
+    Children --> Card["LinkCard<br/>(one per link)"]
+    Children --> LForm["LinkForm<br/>(add/edit dialog)"]
+
+    classDef provider fill:#ffffff,stroke:#333333,color:#000;
+    classDef page fill:#ededed,stroke:#333333,color:#000;
+    class CP,BR,TP,Coll provider;
+    class Dash,Links,Fav,ColPage,Tags,SignIn page;

@@ -1,0 +1,21 @@
+%%{init: {'theme':'neutral'}}%%
+flowchart TD
+    Index["index.js<br/>(creates the Express app)"]
+    Index --> Cors["cors()"]
+    Index --> Json["express.json()"]
+    Index --> ClerkMW["clerkMiddleware()"]
+    Index --> Mount["mounts routers"]
+    Index --> ErrH["error handler (last)"]
+
+    Mount --> Auth["middleware/auth.js<br/>attachUser"]
+    Mount --> RLinks["routes/links.js"]
+    Mount --> RColl["routes/collections.js"]
+    Mount --> RTags["routes/tags.js (stub)"]
+
+    Auth --> PrismaLib["lib/prisma.js<br/>(shared client)"]
+    RLinks --> PrismaLib
+    RColl --> PrismaLib
+    RTags --> PrismaLib
+
+    PrismaLib --> Schema["prisma/schema.prisma<br/>(data model)"]
+    Schema --> DB[("MongoDB")]
